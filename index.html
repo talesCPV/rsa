@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="rsa.js"></script>
+    <title>RSA</title>
+    <style>
+
+        button, textarea{
+            width: 250px;
+            cursor: pointer;
+        }
+
+        .inline{
+            display: flex;
+            gap: 5px;
+            margin: 5px;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="inline">
+        <label for="edtP1">P1</label>
+        <input type="text" id="edtP1" value="83">
+    </div>
+
+    <div class="inline">
+        <label for="edtP2">P2</label>
+        <input type="text" id="edtP2" value="53">
+    </div>
+
+    <div class="inline">
+        <label for="edtVal">Your Text Here</label>
+        <input type="text" id="edtVal">
+    </div>
+    <div class="inline">
+        <button id="btn-crip">Cripto</button>
+    </div>
+
+    <div class="inline">
+        <textarea id="edt-out" cols="30" rows="10" readonly></textarea>
+    </div>
+
+
+</body>
+<script>
+
+    document.querySelector('#btn-crip').addEventListener('click',()=>{
+
+        const V1 = document.querySelector('#edtVal').value
+        const out = document.querySelector('#edt-out')
+        const P = parseInt(document.querySelector('#edtP1').value) 
+        const Q = parseInt(document.querySelector('#edtP2').value) 
+        const N = P*Q
+        const f_N = (P-1)*(Q-1)
+        const E = callE(f_N)
+        const D = euclides(f_N,E)
+
+        const s = 6
+
+        let txt_crip = ''
+
+        for(let i=0; i<V1.length; i++){
+
+            const V = crip(V1.charCodeAt(i),E,N).toString().padStart(s,0)
+
+            console.log(V)
+
+            txt_crip += V
+
+            console.log(V1.charCodeAt(i) )
+        }
+        console.log(txt_crip)
+
+        let txt_decrip = ''
+
+        for(let i=0; i<txt_crip.length/s; i++){
+
+            const ascii =  crip(parseInt(txt_crip.substr(i*s,s)),D,N)
+
+
+            txt_decrip += String.fromCharCode(ascii)
+
+            console.log(ascii )
+        }
+
+
+
+        const V2 = crip(V1,E,N) //Math.pow(V1,E)%N
+        const V3 = crip(V2,D,N)
+
+console.log(txt_decrip)
+
+
+        out.innerHTML = `P:${P}\rQ:${Q}\rN:${N}\nf_N:${f_N}\re:${E}\rD:${D}\r\rTXT:${V1}\rCRIP:${txt_crip}\rBACK:${txt_decrip}`
+
+    })
+
+</script>
+</html>
